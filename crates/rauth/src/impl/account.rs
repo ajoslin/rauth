@@ -36,11 +36,13 @@ impl Account {
             .find_account_by_normalised_email(&email_normalised)
             .await?
         {
-            // Resend account verification or send password reset
-            if let EmailVerification::Pending { .. } = &account.verification {
-                account.start_email_verification(rauth).await?;
-            } else {
-                account.start_password_reset(rauth).await?;
+            if verify_email {
+                // Resend account verification or send password reset
+                if let EmailVerification::Pending { .. } = &account.verification {
+                    account.start_email_verification(rauth).await?;
+                } else {
+                    account.start_password_reset(rauth).await?;
+                }
             }
 
             Ok(account)
